@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet, ActivityIndicator, Text, TouchableOpacity, ScrollView, Image, } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import NewsCard from '@/components/NewsCard';
+import { FlatList, StyleSheet, View, Image, Dimensions, ScrollView } from 'react-native';
+import { Searchbar, ActivityIndicator, Text, Appbar } from 'react-native-paper';
+import Carousel from 'react-native-reanimated-carousel';
+
 import { categories, sampleNews } from '@/data';
 import { COLORS } from '@/constants/theme';
+import { NewsCardA, NewsCardB } from '@/components';
 
 export function HomeScreen() {
   const [news, setNews] = useState<typeof sampleNews>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchVisible, setSearchVisible] = useState(false);
+  const width = Dimensions.get('window').width;
 
   useEffect(() => {
     setTimeout(() => {
@@ -17,65 +21,56 @@ export function HomeScreen() {
     }, 1000);
   }, []);
 
-  const renderItem = ({ item }: { item: typeof sampleNews[0] }) => (
-    <NewsCard
-      title={item.title}
-      description={item.description}
-      imageUrl={item.imageUrl}
-      onPress={() => console.log('News item pressed:', item.title)}
-    />
-  );
-
   return (
     <View style={styles.container}>
-      <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="search" size={24} color="white" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Name</Text>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="person" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.bannerContainer}>
-          {sampleNews.length > 0 && (
-            <View style={styles.bannerWrapper}>
-              <Image
-                source={{ uri: sampleNews[0].imageUrl }}
-                style={styles.bannerImage}
-                resizeMode="cover"
+      <Appbar.Header style={styles.header}>
+        <Appbar.Action icon="menu" color="#fff" onPress={() => { }} />
+        <Appbar.Content title="Name" color="#fff" style={styles.headerContent} />
+        <Appbar.Action icon="magnify" color="#fff" onPress={() => setSearchVisible(!searchVisible)} />
+      </Appbar.Header>
+      {searchVisible && (
+        <Searchbar
+          placeholder="Buscar"
+          onChangeText={(query) => setSearchQuery(query)}
+          value={searchQuery}
+          style={styles.searchbar}
+        />
+      )}
+      {loading ? (
+        <ActivityIndicator animating={true} style={styles.loader} />
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View>
+            <View style={{ flex: 1 }}>
+              <Carousel
+                loop
+                width={width}
+                height={250}
+                autoPlay={true}
+                data={news}
+                scrollAnimationDuration={5000}
+                mode="parallax"
+                onSnapToItem={(index) => console.log('current index:', index)}
+                renderItem={NewsCardB}
               />
-              <View style={styles.bannerTextContainer}>
-                <Text style={styles.bannerTitle}>{sampleNews[0].title}</Text>
-                <Text style={styles.bannerDescription}>{sampleNews[0].description}</Text>
-              </View>
             </View>
-          )}
-        </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
-          {categories.map((category) => (
-            <View key={category.name} style={styles.categoryButton}>
-              <Image source={{ uri: category.icon }} style={styles.categoryIcon} />
-              <Text style={styles.categoryText}>{category.name}</Text>
-            </View>
-          ))}
-        </ScrollView>
-        <Text style={styles.sectionTitle}>All News</Text>
-        {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
-        ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
+              {categories.map((category) => (
+                <View key={category.name} style={styles.categoryButton}>
+                  <Image source={{ uri: category.icon }} style={styles.categoryIcon} />
+                  <Text style={styles.categoryText}>{category.name}</Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
           <FlatList
             data={news}
-            renderItem={renderItem}
+            renderItem={NewsCardA}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContainer}
           />
-        )}
-      </ScrollView>
-      <SafeAreaView edges={['bottom']} style={styles.footerSafeArea} />
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -83,70 +78,21 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#f4f4f4"
   },
-  headerSafeArea: {
-    backgroundColor: COLORS.header,
+  searchbar: {
+    margin: 10,
+    borderRadius: 20,
+    elevation: 2,
+    backgroundColor: '#ffffff',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: COLORS.header,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-  },
-  headerTitle: {
-    fontSize: 20,
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  iconButton: {
-    padding: 5,
+
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
   },
   scrollContainer: {
-    paddingBottom: 20,
-  },
-  bannerContainer: {
-    width: '100%',
-    height: 220,
-    marginBottom: 15,
-    overflow: 'hidden',
-  },
-  bannerWrapper: {
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
-    position: 'relative',
-  },
-  bannerImage: {
-    width: '100%',
-    height: '100%',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-  },
-  bannerTextContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 15,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-  },
-  bannerTitle: {
-    fontSize: 24,
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  bannerDescription: {
-    fontSize: 16,
-    color: '#fff',
+    paddingBottom: 0,
   },
   categoriesContainer: {
     flexDirection: 'row',
@@ -157,6 +103,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 5,
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: '#ffffff',
+    elevation: 3,
   },
   categoryIcon: {
     width: 60,
@@ -170,20 +120,24 @@ const styles = StyleSheet.create({
     color: '#007bff',
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 10,
+    fontSize: 20,
+    fontWeight: '700',
+    marginVertical: 15,
     marginLeft: 15,
-  },
-  loader: {
-    flex: 1,
-    justifyContent: 'center',
+    color: '#333',
   },
   listContainer: {
     paddingTop: 10,
     paddingHorizontal: 15,
   },
-  footerSafeArea: {
-    backgroundColor: 'transparent',
+  header: {
+    height: 50,
+    backgroundColor: COLORS.header,
+    color: "#fff"
+  },
+  headerContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
 });
