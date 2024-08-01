@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function Navigation() {
   return (
     <React.Fragment>
-      <StatusBar barStyle="light-content" backgroundColor="#002c60" animated={true} />
+      <StatusBar barStyle="light-content" backgroundColor="#fff" animated={true} />
       <NavigationContainer >
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen
