@@ -1,6 +1,6 @@
 const environment = {
   API: {
-    URL: "https://www.guarantanews.com.br",
+    URL: "https://www.sonoticias.com.br",
   }
 };
 

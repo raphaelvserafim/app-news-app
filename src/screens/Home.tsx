@@ -1,24 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, View, Image, Dimensions, ScrollView } from 'react-native';
+import { FlatList, StyleSheet, View, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { Searchbar, ActivityIndicator, Text, Appbar } from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
 
-import { categories, sampleNews } from '@/data';
 import { COLORS } from '@/constants/theme';
 import { NewsCardA, NewsCardB } from '@/components';
+import { Wpp } from '@/services/wpp';
 
 export function HomeScreen() {
-  const [news, setNews] = useState<typeof sampleNews>([]);
-  const [loading, setLoading] = useState(true);
+  const [news, setNews] = useState<any>([]);
+  const [categories, setCategories] = useState<any>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchVisible, setSearchVisible] = useState(false);
   const width = Dimensions.get('window').width;
 
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setNews(sampleNews);
+  //     setLoading(false);
+  //   }, 1000);
+  // }, []);
+
+
   useEffect(() => {
-    setTimeout(() => {
-      setNews(sampleNews);
+    Wpp.getFormattedCategories().then((response) => {
+      if (response?.length > 0) {
+        setCategories(response);
+        setLoading(false);
+      }
+    }).catch(console.error);
+
+    Wpp.getFormattedRecentPosts().then((response) => {
+      setNews(response);
+      console.log("News", response);
       setLoading(false);
-    }, 1000);
+    }).catch(console.error);
+
   }, []);
 
   return (
@@ -55,11 +73,13 @@ export function HomeScreen() {
               />
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
-              {categories.map((category) => (
-                <View key={category.name} style={styles.categoryButton}>
-                  <Image source={{ uri: category.icon }} style={styles.categoryIcon} />
-                  <Text style={styles.categoryText}>{category.name}</Text>
-                </View>
+              {categories.map((category: any) => (
+                <TouchableOpacity onPress={() => console.log(category)} key={'category-' + categories.id}>
+                  <View key={category.name} style={styles.categoryButton}>
+                    {/* <Image source={{ uri: category?.icon }} style={styles.categoryIcon} /> */}
+                    <Text style={styles.categoryText}>{category.name}</Text>
+                  </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
@@ -86,7 +106,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     backgroundColor: '#ffffff',
   },
-
   loader: {
     flex: 1,
     justifyContent: 'center',
