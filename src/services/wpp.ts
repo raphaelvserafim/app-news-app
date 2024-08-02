@@ -54,7 +54,7 @@ export class Wpp {
     }
   }
 
-  static async fetchRecentPosts(perPage: number = 10): Promise<any[]> {
+  static async fetchRecentPosts(perPage: number = 5): Promise<any[]> {
     try {
       const response = await api.get('/posts', {
         params: {
@@ -115,5 +115,5 @@ export class Wpp {
     }
   }
 
-  
+
 }

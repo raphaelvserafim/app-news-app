@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet, View, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { Searchbar, ActivityIndicator, Text, Appbar } from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
-
+ 
 import { COLORS } from '@/constants/theme';
 import { NewsCardA, NewsCardB } from '@/components';
 import { Wpp } from '@/services/wpp';
+import { Header } from '@/components/Header';
 
 export function HomeScreen() {
   const [news, setNews] = useState<any>([]);
@@ -27,7 +28,7 @@ export function HomeScreen() {
     Wpp.getFormattedCategories().then((response) => {
       if (response?.length > 0) {
         setCategories(response);
-        setLoading(false);
+        // setLoading(false);
       }
     }).catch(console.error);
 
@@ -41,11 +42,10 @@ export function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.header}>
-        <Appbar.Action icon="menu" color="#fff" onPress={() => { }} />
-        <Appbar.Content title="Name" color="#fff" style={styles.headerContent} />
-        <Appbar.Action icon="magnify" color="#fff" onPress={() => setSearchVisible(!searchVisible)} />
-      </Appbar.Header>
+      <Header
+        setSearchVisible={setSearchVisible}
+        searchVisible={setSearchVisible}
+      />
       {searchVisible && (
         <Searchbar
           placeholder="Buscar"
@@ -55,7 +55,10 @@ export function HomeScreen() {
         />
       )}
       {loading ? (
-        <ActivityIndicator animating={true} style={styles.loader} />
+        <View>
+           
+
+        </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View>
