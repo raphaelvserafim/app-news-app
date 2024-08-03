@@ -55,10 +55,11 @@ export class Wpp {
   }
 
 
-  static async fetchPostsByCategory(categoryId: number, perPage: number = 10): Promise<any[]> {
+  static async fetchPostsByCategory(categoryId: number, page: number = 1, perPage: number = 10): Promise<any[]> {
     try {
       const response = await api.get('/posts', {
         params: {
+          page: page,
           categories: categoryId,
           per_page: perPage,
           orderby: 'date',

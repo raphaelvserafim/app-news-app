@@ -6,10 +6,11 @@ import Carousel from 'react-native-reanimated-carousel';
 import { NewsCardA, NewsCardASkeleton, NewsCardBSkeleton, Header, NewsCardB } from '@/components';
 import environment from '@/configs/environment';
 import { allCategories } from '@/services/categories';
-import { getRecentPosts } from '@/services/posts';
+import { getPostsByCategory, getRecentPosts } from '@/services/posts';
 import { WebViewScreen } from '@/components/WebViewScreen';
 
 export function HomeScreen() {
+  const [topNews, setTopNews] = useState<any>([]);
   const [news, setNews] = useState<any>([]);
   const [categories, setCategories] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,10 +22,7 @@ export function HomeScreen() {
   const [isWebViewVisible, setIsWebViewVisible] = useState(false);
   const [url, setUrl] = useState('');
 
-  useEffect(() => {
-    fetchCategories();
-    fetchNews();
-  }, []);
+
 
   const fetchCategories = async () => {
     try {
@@ -50,6 +48,18 @@ export function HomeScreen() {
     }
   };
 
+  const fetchTopNews = async () => {
+    try {
+      const response = await getPostsByCategory(environment.featuredCategory, 1);
+      setTopNews((prevNews: any) => [...prevNews, ...response]);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+      setIsFetchingMore(false);
+    }
+  };
+
+
   const handleEndReached = () => {
     if (!isFetchingMore) {
       setIsFetchingMore(true);
@@ -70,6 +80,13 @@ export function HomeScreen() {
       <NewsCardASkeleton key={`skeleton-${index}`} />
     ));
   };
+
+
+  useEffect(() => {
+    fetchCategories();
+    fetchNews();
+    fetchTopNews();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -113,7 +130,7 @@ export function HomeScreen() {
                 <FlatList
                   horizontal
                   data={[]}
-                  renderItem={({ item: category }) => (
+                  renderItem={({ item }) => (
                     <>...</>
                   )}
                   contentContainerStyle={styles.categoriesContainer}
@@ -140,7 +157,7 @@ export function HomeScreen() {
                 width={width}
                 height={250}
                 autoPlay={true}
-                data={news}
+                data={topNews}
                 scrollAnimationDuration={5000}
                 mode="parallax"
                 onSnapToItem={(index) => console.log('current index:', index)}
@@ -177,7 +194,7 @@ export function HomeScreen() {
           )}
         />
       )}
-      
+
       {isWebViewVisible && (
         <WebViewScreen url={url} onClose={() => setIsWebViewVisible(false)} />
       )}
