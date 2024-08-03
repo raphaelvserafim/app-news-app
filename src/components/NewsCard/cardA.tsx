@@ -4,7 +4,7 @@ import { Text, } from 'react-native-paper';
 
 export function NewsCardA({ item }: any) {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity key={"news-" + item.id}>
       <View style={styles.newsCard}>
         <View style={styles.newsContent}>
           <Text style={styles.cardTitle}>{item.title}</Text>
