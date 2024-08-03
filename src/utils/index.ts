@@ -12,3 +12,7 @@ export function truncateText(text: string, maxLength: number): string {
   }
   return text.substring(0, maxLength - 3) + '...';
 }
+
+export function removeHtmlTags(htmlString: string) {
+  return htmlString.replace(/<\/?[^>]+(>|$)/g, '');
+}
