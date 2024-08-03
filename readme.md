@@ -2,7 +2,7 @@
 
 **APP NEWS Para WordPress** é um aplicativo de notícias desenvolvido para integrar com sites WordPress, oferecendo uma experiência de leitura de notícias otimizada para dispositivos móveis.
 
-![App Demo](assets/anigif.gif)
+<img src="assets/anigif.gif" alt="App Demo" width="300"/>
 
 ## Funcionalidades
 
@@ -11,6 +11,12 @@
 - **Notificações Push:** Envia notificações em tempo real para os usuários quando novas notícias são publicadas.
 - **Leitura Offline:** Salva artigos para leitura offline.
 - **Modo Escuro:** Suporte ao modo escuro para leitura confortável em ambientes com pouca luz.
+
+## Funcionalidades Futuras
+
+- **Notificações Push:** 🔔 Envia notificações em tempo real para os usuários quando novas notícias são publicadas.
+- **Leitura Offline:** 📥 Salva artigos para leitura offline.
+- **Modo Escuro:** 🌙 Suporte ao modo escuro para leitura confortável em ambientes com pouca luz.
 
 ## Requisitos
 
