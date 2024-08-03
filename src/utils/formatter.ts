@@ -1,4 +1,4 @@
-import { cleanCategoryName, truncateText } from "@/utils";
+import { cleanCategoryName, removeHtmlTags, truncateText } from "@/utils";
 
 export function formatCategories(categories: any[]): { id: number; name: string; slug: string; description: string; count: number }[] {
   return categories.map((category: {
@@ -16,7 +16,7 @@ export function formatCategories(categories: any[]): { id: number; name: string;
   }));
 }
 
-export async function formatPosts(posts: any[], fetchFeaturedImageUrl: (imageId: number) => Promise<string>): Promise<{ id: number; title: string; date: string; excerpt: string; link: string; imageUrl: string }[]> {
+export async function formatPosts(posts: any[], fetchFeaturedImageUrl: (imageId: number) => Promise<string>): Promise<{ id: number; title: string; date: string; description: string; link: string; imageUrl: string }[]> {
   const formattedPosts = posts.map(async (post: {
     id: number;
     title: { rendered: string };
@@ -29,9 +29,9 @@ export async function formatPosts(posts: any[], fetchFeaturedImageUrl: (imageId:
     const featuredImage = featuredImageId ? await fetchFeaturedImageUrl(featuredImageId) : '';
     return {
       id: post.id,
-      title: truncateText(post.title.rendered, 60),
+      title: removeHtmlTags(truncateText(post.title.rendered, 60)),
       date: post.date,
-      excerpt: post.excerpt.rendered,
+      description: removeHtmlTags(truncateText(post.excerpt.rendered, 70)),
       link: post.link,
       imageUrl: featuredImage,
     };

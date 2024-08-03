@@ -36,11 +36,12 @@ export class Wpp {
     }
   }
 
-  static async fetchRecentPosts(perPage: number): Promise<any[]> {
+  static async fetchRecentPosts(page: number = 1, perPage: number = 10): Promise<any[]> {
     try {
       const response = await api.get('/posts', {
         params: {
           per_page: perPage,
+          page: page,
           orderby: 'date',
           order: 'desc',
           _embed: true,
@@ -52,6 +53,7 @@ export class Wpp {
       throw error;
     }
   }
+
 
   static async fetchPostsByCategory(categoryId: number, perPage: number = 10): Promise<any[]> {
     try {

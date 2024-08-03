@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, View, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
-import { Searchbar, ActivityIndicator, Text, Appbar } from 'react-native-paper';
+import { FlatList, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
+import { Searchbar, ActivityIndicator, Text } from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
 
 import { COLORS } from '@/constants/theme';
 import { NewsCardA, NewsCardB } from '@/components';
-import { Wpp } from '@/services/wpp';
 import { Header } from '@/components/Header';
 import environment from '@/configs/environment';
 import { allCategories } from '@/services/categories';
@@ -17,33 +16,46 @@ export function HomeScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchVisible, setSearchVisible] = useState(false);
+  const [page, setPage] = useState<number>(1);
+  const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
   const width = Dimensions.get('window').width;
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setNews(sampleNews);
-  //     setLoading(false);
-  //   }, 1000);
-  // }, []);
-
-
   useEffect(() => {
-
-    allCategories().then((response) => {
-      if (response?.length > 0) {
-        setCategories(response);
-        // setLoading(false);
-      }
-    }).catch(console.error);
-
-    getRecentPosts().then((response) => {
-      setNews(response);
-      // console.log("News", response);
-      setLoading(false);
-    }).catch(console.error);
-
+    fetchCategories();
+    fetchNews();
   }, []);
 
+  const fetchCategories = async () => {
+    try {
+      const response = await allCategories();
+      if (response?.length > 0) {
+        setCategories(response);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchNews = async () => {
+    try {
+      const response = await getRecentPosts(page);
+      setNews((prevNews: any) => [...prevNews, ...response]);
+      setLoading(false);
+      setIsFetchingMore(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+      setIsFetchingMore(false);
+    }
+  };
+
+  const handleEndReached = () => {
+    if (!isFetchingMore) {
+      setIsFetchingMore(true);
+      setPage((prevPage) => prevPage + 1);
+      fetchNews();
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -60,44 +72,50 @@ export function HomeScreen() {
         />
       )}
       {loading ? (
-        <View>
-
-
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#0000ff" />
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <View>
-            <View style={{ flex: 1 }}>
-              <Carousel
-                loop
-                width={width}
-                height={250}
-                autoPlay={true}
-                data={news}
-                scrollAnimationDuration={5000}
-                mode="parallax"
-                onSnapToItem={(index) => console.log('current index:', index)}
-                renderItem={NewsCardB}
+        <FlatList
+          ListHeaderComponent={() => (
+            <>
+              <View style={{ flex: 1 }}>
+                <Carousel
+                  loop
+                  width={width}
+                  height={250}
+                  autoPlay={true}
+                  data={news}
+                  scrollAnimationDuration={5000}
+                  mode="parallax"
+                  onSnapToItem={(index) => console.log('current index:', index)}
+                  renderItem={NewsCardB}
+                />
+              </View>
+              <FlatList
+                horizontal
+                data={categories}
+                renderItem={({ item: category }) => (
+                  <TouchableOpacity onPress={() => console.log(category)} key={'category-' + category.id}>
+                    <View key={category.name} style={styles.categoryButton}>
+                      <Text style={styles.categoryText}>{category.name}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.id.toString()}
+                contentContainerStyle={styles.categoriesContainer}
+                showsHorizontalScrollIndicator={false}
               />
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.categoriesContainer} key={""}>
-              {categories.map((category: any) => (
-                <TouchableOpacity onPress={() => console.log(category)} key={'category-' + category.id}>
-                  <View key={category.name} style={styles.categoryButton}>
-                    {/* <Image source={{ uri: category?.icon }} style={styles.categoryIcon} /> */}
-                    <Text style={styles.categoryText}>{category.name}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-          <FlatList
-            data={news}
-            renderItem={NewsCardA}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.listContainer}
-          />
-        </ScrollView>
+            </>
+          )}
+          data={news}
+          renderItem={({ item }) => <NewsCardA item={item} onPress={(e) => console.log(e)} />}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={styles.listContainer}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={() => isFetchingMore ? <ActivityIndicator size="small" color="#0000ff" /> : null}
+        />
       )}
     </View>
   );

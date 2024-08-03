@@ -17,6 +17,6 @@ export interface ListRenderItemInfo {
 }
 
 export interface NewsCardAProps {
-  item: any;
-  onPress: (item: any) => void;
+  item: ListRenderItemInfo;
+  onPress: (item: ListRenderItemInfo) => void;
 }

@@ -1,10 +1,11 @@
+import { NewsCardAProps } from '@/model';
 import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Text, } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
-export function NewsCardA({ item }: any) {
+export function NewsCardA({ item, onPress }: NewsCardAProps) {
   return (
-    <TouchableOpacity key={"news-" + item.id}>
+    <TouchableOpacity onPress={() => onPress(item)}>
       <View style={styles.newsCard}>
         <View style={styles.newsContent}>
           <Text style={styles.cardTitle}>{item.title}</Text>
@@ -21,7 +22,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 100,
     marginBottom: 15,
-    borderRadius: 12,
+    borderTopRightRadius: 12,
+    borderBottomRightRadius: 12,
     elevation: 3,
     backgroundColor: '#ffffff',
     overflow: 'hidden',
@@ -35,12 +37,13 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: '#333',
+    marginBottom: 4,
   },
   cardDescription: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
   },
 });
