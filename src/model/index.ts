@@ -14,6 +14,7 @@ export interface ListRenderItemInfo {
   title: string;
   description: string;
   imageUrl: string;
+  link: string;
 }
 
 export interface NewsCardAProps {

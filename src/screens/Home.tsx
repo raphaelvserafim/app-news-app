@@ -7,6 +7,7 @@ import { NewsCardA, NewsCardASkeleton, NewsCardBSkeleton, Header, NewsCardB } fr
 import environment from '@/configs/environment';
 import { allCategories } from '@/services/categories';
 import { getRecentPosts } from '@/services/posts';
+import { WebViewScreen } from '@/components/WebViewScreen';
 
 export function HomeScreen() {
   const [news, setNews] = useState<any>([]);
@@ -17,6 +18,8 @@ export function HomeScreen() {
   const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const width = Dimensions.get('window').width;
+  const [isWebViewVisible, setIsWebViewVisible] = useState(false);
+  const [url, setUrl] = useState('');
 
   useEffect(() => {
     fetchCategories();
@@ -53,6 +56,13 @@ export function HomeScreen() {
       setPage((prevPage) => prevPage + 1);
       fetchNews();
     }
+  };
+
+
+  const handleUrl = (url: string) => {
+    setUrl(url);
+    setIsWebViewVisible(true);
+    console.log({ url })
   };
 
   const renderSkeletonLoadersCardNewsA = () => {
@@ -153,7 +163,7 @@ export function HomeScreen() {
             </View>
           )}
           data={news}
-          renderItem={({ item }) => <NewsCardA item={item} onPress={(e) => console.log(e)} />}
+          renderItem={({ item }) => <NewsCardA item={item} onPress={(e) => handleUrl(e?.link)} />}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.listContainer}
           onEndReached={handleEndReached}
@@ -166,6 +176,10 @@ export function HomeScreen() {
             ) : null
           )}
         />
+      )}
+      
+      {isWebViewVisible && (
+        <WebViewScreen url={url} onClose={() => setIsWebViewVisible(false)} />
       )}
     </View>
   );
