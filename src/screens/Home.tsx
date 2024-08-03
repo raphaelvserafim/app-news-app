@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet, View, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { Searchbar, ActivityIndicator, Text, Appbar } from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
- 
+
 import { COLORS } from '@/constants/theme';
 import { NewsCardA, NewsCardB } from '@/components';
 import { Wpp } from '@/services/wpp';
 import { Header } from '@/components/Header';
+import environment from '@/configs/environment';
+import { allCategories } from '@/services/categories';
+import { getRecentPosts } from '@/services/posts';
 
 export function HomeScreen() {
   const [news, setNews] = useState<any>([]);
@@ -25,25 +28,28 @@ export function HomeScreen() {
 
 
   useEffect(() => {
-    Wpp.getFormattedCategories().then((response) => {
+
+    allCategories().then((response) => {
       if (response?.length > 0) {
         setCategories(response);
         // setLoading(false);
       }
     }).catch(console.error);
 
-    Wpp.getFormattedRecentPosts().then((response) => {
+    getRecentPosts().then((response) => {
       setNews(response);
-      console.log("News", response);
+      // console.log("News", response);
       setLoading(false);
     }).catch(console.error);
 
   }, []);
 
+
   return (
     <View style={styles.container}>
       <Header
-        setSearchVisible={setSearchVisible}
+        title={environment.NAME}
+        setSearchVisible={(e) => setSearchVisible(e)}
         searchVisible={setSearchVisible}
       />
       {searchVisible && (
@@ -56,7 +62,7 @@ export function HomeScreen() {
       )}
       {loading ? (
         <View>
-           
+
 
         </View>
       ) : (
@@ -75,9 +81,9 @@ export function HomeScreen() {
                 renderItem={NewsCardB}
               />
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={true} style={styles.categoriesContainer} key={""}>
               {categories.map((category: any) => (
-                <TouchableOpacity onPress={() => console.log(category)} key={'category-' + categories.id}>
+                <TouchableOpacity onPress={() => console.log(category)} key={'category-' + category.id}>
                   <View key={category.name} style={styles.categoryButton}>
                     {/* <Image source={{ uri: category?.icon }} style={styles.categoryIcon} /> */}
                     <Text style={styles.categoryText}>{category.name}</Text>

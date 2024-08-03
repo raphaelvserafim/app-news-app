@@ -1,13 +1,12 @@
-import api from "./api";
+import api from "@/services/api";
 
 export class Wpp {
 
   static async fetchCategories(perPage: number = 100): Promise<any[]> {
-    let allCategories: any[] = [];
-    let page = 1;
-    let categories;
-
     try {
+      let allCategories: any[] = [];
+      let page = 1;
+      let categories;
       do {
         categories = await api.get('/categories', {
           params: {
@@ -27,34 +26,17 @@ export class Wpp {
     }
   }
 
-  static formatCategories(categories: any[]): { id: number; name: string; slug: string; description: string; count: number }[] {
-    return categories.map((category: {
-      id: number;
-      name: string;
-      slug: string;
-      description: string;
-      count: number;
-    }) => ({
-      id: category.id,
-      name: category.name,
-      slug: category.slug,
-      description: category.description,
-      count: category.count,
-    }));
-  }
-
-  static async getFormattedCategories() {
+  static async fetchFeaturedImageUrl(imageId: number): Promise<string> {
     try {
-      const categories = await this.fetchCategories();
-      const formattedCategories = this.formatCategories(categories);
-      return formattedCategories.sort((a, b) => b.count - a.count);
+      const response = await api.get(`/media/${imageId}`);
+      return response.data?.source_url || '';
     } catch (error) {
-      console.error('Erro ao formatar categorias:', error);
-      throw error;
+      console.error('Erro ao obter imagem destacada:', error);
+      return '';
     }
   }
 
-  static async fetchRecentPosts(perPage: number = 5): Promise<any[]> {
+  static async fetchRecentPosts(perPage: number): Promise<any[]> {
     try {
       const response = await api.get('/posts', {
         params: {
@@ -67,50 +49,6 @@ export class Wpp {
       return response.data;
     } catch (error) {
       console.error('Erro ao obter notícias recentes:', error);
-      throw error;
-    }
-  }
-
-  static async fetchFeaturedImageUrl(imageId: number): Promise<string> {
-    try {
-      const response = await api.get(`/media/${imageId}`);
-      return response.data?.source_url || '';
-    } catch (error) {
-      console.error('Erro ao obter imagem destacada:', error);
-      return '';
-    }
-  }
-
-  static async formatPosts(posts: any[]): Promise<{ id: number; title: string; date: string; excerpt: string; link: string; imageUrl: string }[]> {
-    const formattedPosts = posts.map(async (post: {
-      id: number;
-      title: { rendered: string };
-      date: string;
-      excerpt: { rendered: string };
-      link: string;
-      featured_media?: number;
-    }) => {
-      const featuredImageId = post.featured_media;
-      const featuredImage = featuredImageId ? await this.fetchFeaturedImageUrl(featuredImageId) : '';
-      return {
-        id: post.id,
-        title: post.title.rendered,
-        date: post.date,
-        excerpt: post.excerpt.rendered,
-        link: post.link,
-        imageUrl: featuredImage,
-      };
-    });
-
-    return Promise.all(formattedPosts);
-  }
-
-  static async getFormattedRecentPosts() {
-    try {
-      const posts = await this.fetchRecentPosts();
-      return await this.formatPosts(posts);
-    } catch (error) {
-      console.error('Erro ao formatar notícias recentes:', error);
       throw error;
     }
   }
