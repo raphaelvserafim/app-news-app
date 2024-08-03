@@ -3,12 +3,12 @@ import { StyleSheet } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import { COLORS } from '@/constants/theme';
 
-export function Header(props: { title: string; setSearchVisible: (arg0: boolean) => void; searchVisible: any; }) {
+export function Header(props: { title: string; setSearchVisible: () => void; }) {
   return (
     <Appbar.Header style={styles.header}>
       <Appbar.Action icon="menu" color={COLORS.colorWhite} onPress={() => { }} />
       <Appbar.Content title={props?.title} color={COLORS.colorWhite} style={styles.headerContent} />
-      <Appbar.Action icon="magnify" color={COLORS.colorWhite} onPress={() => props?.setSearchVisible(!props.searchVisible)} />
+      <Appbar.Action icon="magnify" color={COLORS.colorWhite} onPress={() => props?.setSearchVisible()} />
     </Appbar.Header>
   )
 }

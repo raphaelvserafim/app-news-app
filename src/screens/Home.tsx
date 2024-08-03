@@ -49,8 +49,7 @@ export function HomeScreen() {
     <View style={styles.container}>
       <Header
         title={environment.NAME}
-        setSearchVisible={(e) => setSearchVisible(e)}
-        searchVisible={setSearchVisible}
+        setSearchVisible={() => setSearchVisible(!Boolean(searchVisible))}
       />
       {searchVisible && (
         <Searchbar
