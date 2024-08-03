@@ -1,10 +1,11 @@
+import { NewsCardAProps } from '@/model';
 import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, } from 'react-native-paper';
 
-export function NewsCardB({ item }: any) {
+export function NewsCardB({ item, onPress }: NewsCardAProps) {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={() => onPress(item)}>
       <View style={styles.bannerWrapper}>
         <Image source={{ uri: item.imageUrl }} style={styles.bannerImage} resizeMode="cover" />
         <View style={styles.bannerTextContainer}>
