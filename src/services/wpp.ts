@@ -53,5 +53,68 @@ export class Wpp {
     }
   }
 
+  static async fetchPostsByCategory(categoryId: number, perPage: number = 10): Promise<any[]> {
+    try {
+      const response = await api.get('/posts', {
+        params: {
+          categories: categoryId,
+          per_page: perPage,
+          orderby: 'date',
+          order: 'desc',
+          _embed: true,
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao obter posts por categoria:', error);
+      throw error;
+    }
+  }
+
+
+  static async fetchAuthors(perPage: number = 100): Promise<any[]> {
+    try {
+      const response = await api.get('/users', {
+        params: {
+          per_page: perPage,
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao obter autores:', error);
+      throw error;
+    }
+  }
+
+
+  static async fetchTags(perPage: number = 100): Promise<any[]> {
+    try {
+      const response = await api.get('/tags', {
+        params: {
+          per_page: perPage,
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao obter tags:', error);
+      throw error;
+    }
+  }
+
+  static async fetchComments(postId: number, perPage: number = 50): Promise<any[]> {
+    try {
+      const response = await api.get('/comments', {
+        params: {
+          post: postId,
+          per_page: perPage,
+          order: 'asc',
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao obter comentários:', error);
+      throw error;
+    }
+  }
 
 }
