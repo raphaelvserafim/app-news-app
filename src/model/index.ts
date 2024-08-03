@@ -15,3 +15,8 @@ export interface ListRenderItemInfo {
   description: string;
   imageUrl: string;
 }
+
+export interface NewsCardAProps {
+  item: any;
+  onPress: (item: any) => void;
+}
