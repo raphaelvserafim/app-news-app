@@ -44,7 +44,7 @@ export function HomeScreen() {
 
       addPosts((prevNews: any) => [...prevNews, ...response]);
 
-      
+
       setLoading(false);
       setIsFetchingMore(false);
     } catch (error) {
@@ -167,7 +167,7 @@ export function HomeScreen() {
                 scrollAnimationDuration={5000}
                 mode="parallax"
                 onSnapToItem={(index) => console.log('current index:', index)}
-                renderItem={({ item }: any) => <NewsCardB item={item} onPress={(e) => console.log(e)} />}
+                renderItem={({ item }: any) => <NewsCardB item={item} onPress={(e) => navigateToNews(e.id)} />}
               />
               <FlatList
                 horizontal
