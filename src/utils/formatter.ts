@@ -1,3 +1,5 @@
+import { FormattedPost, Post } from "@/model";
+import { setCache } from "@/services/cacheManager";
 import { cleanCategoryName, removeHtmlTags, truncateText } from "@/utils";
 
 export function formatCategories(categories: any[]): { id: number; name: string; slug: string; description: string; count: number }[] {
@@ -16,26 +18,23 @@ export function formatCategories(categories: any[]): { id: number; name: string;
   }));
 }
 
-export async function formatPosts(posts: any[], fetchFeaturedImageUrl: (imageId: number) => Promise<string>): Promise<{ id: number; title: string; date: string; description: string; link: string; imageUrl: string }[]> {
-  const formattedPosts = posts.map(async (post: {
-    id: number;
-    title: { rendered: string };
-    date: string;
-    excerpt: { rendered: string };
-    link: string;
-    featured_media?: number;
-  }) => {
-    const featuredImageId = post.featured_media;
-    const featuredImage = featuredImageId ? await fetchFeaturedImageUrl(featuredImageId) : '';
-    return {
+export async function formatPosts(posts: Post[]): Promise<FormattedPost[]> {
+  return posts.map(post => {
+    const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0];
+    const thumbnailUrl = featuredMedia?.media_details?.sizes?.thumbnail?.source_url || '';
+    const fullImageUrl = featuredMedia?.media_details?.sizes?.full?.source_url || featuredMedia?.source_url || "";
+    const _post = {
       id: post.id,
-      title: removeHtmlTags(truncateText(post.title.rendered, 60)),
+      title: removeHtmlTags(post.title.rendered),
       date: post.date,
-      description: removeHtmlTags(truncateText(post.excerpt.rendered, 70)),
+      description: removeHtmlTags(post.excerpt.rendered),
       link: post.link,
-      imageUrl: featuredImage,
+      content: post.content.rendered,
+      author: post.author,
+      thumbnailUrl,
+      fullImageUrl,
     };
+    return _post;
   });
-
-  return Promise.all(formattedPosts);
 }
+
