@@ -2,15 +2,16 @@ import { NewsCardAProps } from '@/model';
 import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, } from 'react-native-paper';
+import { truncateText } from '@/utils';
 
 export function NewsCardB({ item, onPress }: NewsCardAProps) {
   return (
     <TouchableOpacity onPress={() => onPress(item)}>
       <View style={styles.bannerWrapper}>
-        <Image source={{ uri: item.imageUrl }} style={styles.bannerImage} resizeMode="cover" />
+        <Image source={{ uri: item.fullImageUrl }} style={styles.bannerImage} resizeMode="cover" />
         <View style={styles.bannerTextContainer}>
-          <Text style={styles.bannerTitle}>{item.title}</Text>
-          <Text style={styles.bannerDescription}>{item.description}</Text>
+          <Text style={styles.bannerTitle}>{truncateText(item.title, 100)}</Text>
+          <Text style={styles.bannerDescription}>{truncateText(item.description, 50)}</Text>
         </View>
       </View>
     </TouchableOpacity>
