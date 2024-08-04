@@ -120,4 +120,14 @@ export class Wpp {
     }
   }
 
+  static async fetchPostById(postId: number): Promise<any> {
+    try {
+      const response = await api.get(`/posts/${postId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao obter post:', error);
+      throw error;
+    }
+  }
+
 }
