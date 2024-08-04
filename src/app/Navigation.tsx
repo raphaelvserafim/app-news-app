@@ -4,8 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { RootStackParamList } from '@/model';
-
-import { HomeScreen } from '@/screens';
+import { HomeScreen, NewsDetailScreen } from '@/screens';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -18,6 +17,11 @@ export default function Navigation() {
           <Stack.Screen
             name="Home"
             component={HomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="NewsDetail"
+            component={NewsDetailScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
