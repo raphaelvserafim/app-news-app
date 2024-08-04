@@ -1,1 +1,1 @@
-export const CACHE_EXPIRATION_TIME = 0; // 10 minutos em milissegundos
+export const CACHE_EXPIRATION_TIME = 120_000; // 2 minutos em milissegundos
