@@ -7,9 +7,12 @@ import { NewsCardA, NewsCardASkeleton, NewsCardBSkeleton, Header, NewsCardB } fr
 import environment from '@/configs/environment';
 import { allCategories } from '@/services/categories';
 import { getPostsByCategory, getRecentPosts } from '@/services/posts';
-import { WebViewScreen } from '@/components/WebViewScreen';
+
+import { useNavigationHook } from '@/hooks';
+import { usePosts } from '@/contexts/PostsContext';
 
 export function HomeScreen() {
+  const { addPosts } = usePosts();
   const [topNews, setTopNews] = useState<any>([]);
   const [news, setNews] = useState<any>([]);
   const [categories, setCategories] = useState<any>([]);
@@ -21,8 +24,7 @@ export function HomeScreen() {
   const width = Dimensions.get('window').width;
   const [isWebViewVisible, setIsWebViewVisible] = useState(false);
   const [url, setUrl] = useState('');
-
-
+  const { navigateToNews } = useNavigationHook();
 
   const fetchCategories = async () => {
     try {
@@ -39,6 +41,10 @@ export function HomeScreen() {
     try {
       const response = await getRecentPosts(page);
       setNews((prevNews: any) => [...prevNews, ...response]);
+
+      addPosts((prevNews: any) => [...prevNews, ...response]);
+
+      
       setLoading(false);
       setIsFetchingMore(false);
     } catch (error) {
@@ -72,7 +78,7 @@ export function HomeScreen() {
   const handleUrl = (url: string) => {
     setUrl(url);
     setIsWebViewVisible(true);
-    console.log({ url })
+
   };
 
   const renderSkeletonLoadersCardNewsA = () => {
@@ -180,7 +186,7 @@ export function HomeScreen() {
             </View>
           )}
           data={news}
-          renderItem={({ item }) => <NewsCardA item={item} onPress={(e) => handleUrl(e?.link)} />}
+          renderItem={({ item }) => <NewsCardA item={item} onPress={(e) => navigateToNews(e.id)} />}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.listContainer}
           onEndReached={handleEndReached}
@@ -193,10 +199,6 @@ export function HomeScreen() {
             ) : null
           )}
         />
-      )}
-
-      {isWebViewVisible && (
-        <WebViewScreen url={url} onClose={() => setIsWebViewVisible(false)} />
       )}
     </View>
   );
