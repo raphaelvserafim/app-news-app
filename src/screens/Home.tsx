@@ -22,8 +22,6 @@ export function HomeScreen() {
   const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const width = Dimensions.get('window').width;
-  const [isWebViewVisible, setIsWebViewVisible] = useState(false);
-  const [url, setUrl] = useState('');
   const { navigateToNews } = useNavigationHook();
 
   const fetchCategories = async () => {
@@ -41,10 +39,7 @@ export function HomeScreen() {
     try {
       const response = await getRecentPosts(page);
       setNews((prevNews: any) => [...prevNews, ...response]);
-
       addPosts((prevNews: any) => [...prevNews, ...response]);
-
-
       setLoading(false);
       setIsFetchingMore(false);
     } catch (error) {
@@ -58,6 +53,7 @@ export function HomeScreen() {
     try {
       const response = await getPostsByCategory(environment.featuredCategory, 1);
       setTopNews((prevNews: any) => [...prevNews, ...response]);
+      addPosts((prevNews: any) => [...prevNews, ...response]);
     } catch (error) {
       console.error(error);
       setLoading(false);
@@ -75,11 +71,6 @@ export function HomeScreen() {
   };
 
 
-  const handleUrl = (url: string) => {
-    setUrl(url);
-    setIsWebViewVisible(true);
-
-  };
 
   const renderSkeletonLoadersCardNewsA = () => {
     return Array.from({ length: 4 }).map((_, index) => (
